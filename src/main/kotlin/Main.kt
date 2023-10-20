@@ -1,4 +1,18 @@
-class TrainRoute(private val startCity: String, private val endCity: String) {
+class TrainRoute {
+    private val cities = listOf(
+        "Бийск", "Барнаул", "Новосибирск", "Томск", "Санкт-Петербург",
+        "Москва", "Красноярск", "Тюмень", "Чита", "Хабаровск",
+        "Владивосток", "Казань", "Самара", "Екатеринбург", "Пермь"
+    )
+    private var startCity = ""
+    private var endCity = ""
+    init {
+        startCity = cities.random()
+        endCity = cities.random()
+        while (endCity == startCity) {
+            endCity = cities.random()
+        }
+    }
     fun getRoute() = "$startCity - $endCity"
 }
 
@@ -6,9 +20,7 @@ class TrainCar(val capacity: Int)
 
 class Train(private var route: TrainRoute) {
     val cars: MutableList<TrainCar> = mutableListOf()
-
-    fun addCar(car: TrainCar) = cars.add(car)
-
+    private fun addCar(car: TrainCar) = cars.add(car)
     fun sendTrain(passengerCount: Int) {
         println("Поезд ${route.getRoute()}, состоящий из ${cars.size} вагонов с $passengerCount пассажирами, отправлен.")
         var remainingPassengers = passengerCount
@@ -21,14 +33,18 @@ class Train(private var route: TrainRoute) {
             println("Вагон ${index + 1}: Вместимость - ${car.capacity}, Пассажиры - $passengerCountInCar")
         }
     }
+    fun passengersToCars(passengerCount: Int) {
+        var passengersLeft = passengerCount
+        while (passengersLeft > 0) {
+            val carCapacity = (5..25).random()
+            val car = TrainCar(carCapacity)
+            addCar(car)
+            passengersLeft -= carCapacity
+        }
+    }
 }
 
 fun main() {
-    val cities = listOf(
-        "Бийск", "Барнаул", "Новосибирск", "Томск", "Санкт-Петербург",
-        "Москва", "Красноярск", "Тюмень", "Чита", "Хабаровск",
-        "Владивосток", "Казань", "Самара", "Екатеринбург", "Пермь"
-    )
     var passengerCount = 0
     var train: Train? = null
     var currentRoute: TrainRoute? = null
@@ -43,12 +59,7 @@ fun main() {
             
         """.trimIndent()).uppercase()) {
             "1" -> {
-                val startCity = cities.random()
-                var endCity = cities.random()
-                while (endCity == startCity) {
-                    endCity = cities.random()
-                }
-                currentRoute = TrainRoute(startCity, endCity)
+                currentRoute = TrainRoute()
                 println("Направление создано: ${currentRoute.getRoute()}")
                 train = Train(currentRoute)
             }
@@ -62,13 +73,7 @@ fun main() {
                     continue
                 }
                 train.cars.clear()
-                var passengersLeft = passengerCount
-                while (passengersLeft > 0) {
-                    val carCapacity = (5..25).random()
-                    val car = TrainCar(carCapacity)
-                    train.addCar(car)
-                    passengersLeft -= carCapacity
-                }
+                train.passengersToCars(passengerCount)
                 println("Поезд сформирован: ${currentRoute!!.getRoute()}")
                 println("Количество вагонов: ${train.cars.size}")
                 for (index in train.cars.indices)
