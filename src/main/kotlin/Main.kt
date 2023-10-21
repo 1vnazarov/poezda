@@ -20,7 +20,6 @@ class TrainCar(val capacity: Int)
 
 class Train(private var route: TrainRoute) {
     val cars: MutableList<TrainCar> = mutableListOf()
-    private fun addCar(car: TrainCar) = cars.add(car)
     fun sendTrain(passengerCount: Int) {
         println("Поезд ${route.getRoute()}, состоящий из ${cars.size} вагонов с $passengerCount пассажирами, отправлен.")
         var remainingPassengers = passengerCount
@@ -33,12 +32,12 @@ class Train(private var route: TrainRoute) {
             println("Вагон ${index + 1}: Вместимость - ${car.capacity}, Пассажиры - $passengerCountInCar")
         }
     }
-    fun passengersToCars(passengerCount: Int) {
+    fun generateCars(passengerCount: Int) {
         var passengersLeft = passengerCount
         while (passengersLeft > 0) {
             val carCapacity = (5..25).random()
             val car = TrainCar(carCapacity)
-            addCar(car)
+            cars.add(car)
             passengersLeft -= carCapacity
         }
     }
@@ -73,7 +72,7 @@ fun main() {
                     continue
                 }
                 train.cars.clear()
-                train.passengersToCars(passengerCount)
+                train.generateCars(passengerCount)
                 println("Поезд сформирован: ${currentRoute!!.getRoute()}")
                 println("Количество вагонов: ${train.cars.size}")
                 for (index in train.cars.indices)
